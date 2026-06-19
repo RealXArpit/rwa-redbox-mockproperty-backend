@@ -11,7 +11,12 @@ const app = new Hono();
 app.use(
   "/*",
   cors({
-    origin: ["http://localhost:5173", "https://rwaREDbox.com"],
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:8080",
+      "https://rwaREDbox.com",
+      "https://www.rwaREDbox.com",
+    ],
   }),
 );
 
