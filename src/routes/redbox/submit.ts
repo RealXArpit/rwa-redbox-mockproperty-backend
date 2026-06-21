@@ -80,4 +80,36 @@ router.post("/submit", async (c) => {
   });
 });
 
+// POST /api/redbox/request-outreach
+// Saves an updated phone + outreach request flag to the lead
+router.post("/request-outreach", async (c) => {
+  const supabase = createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+
+  const body = (await c.req.json()) as {
+    submissionId: string;
+    updatedPhone: string;
+  };
+
+  const { submissionId, updatedPhone } = body;
+  if (!submissionId) return c.json({ error: "Missing submissionId" }, 400);
+
+  // Insert a new outreach request row
+  const { error } = await supabase.from("redbox_leads").insert({
+    property_submission_id: submissionId,
+    name: "outreach_request",
+    phone: updatedPhone,
+    consent_given: true,
+  });
+
+  if (error) {
+    console.error("Outreach request failed:", error);
+    return c.json({ error: "Failed to save outreach request" }, 500);
+  }
+
+  return c.json({ success: true });
+});
+
 export default router;
